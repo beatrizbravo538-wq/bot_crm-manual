@@ -296,6 +296,70 @@
   pre.term .prompt { color: var(--term-dim); }
   pre.term .comment { color: var(--term-dim); font-style: italic; }
 
+  pre.code-embed {
+    background: var(--term-bg);
+    color: var(--term-text);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    padding: 18px 20px;
+    border-radius: 10px;
+    max-height: 620px;
+    overflow: auto;
+    margin: 14px 0 0;
+  }
+
+  .code-note {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+  }
+
+  .fn-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .fn-card {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 14px;
+  }
+
+  .fn-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid var(--accent-line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 15px;
+  }
+
+  .fn-card h3 { margin-bottom: 4px; }
+  .fn-card p { font-size: 14.5px; margin-bottom: 6px; }
+
+  .fn-modify {
+    font-size: 13px;
+    color: var(--amber);
+    background: var(--amber-soft);
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--amber) 35%, transparent);
+  }
+
+  .fn-modify.locked {
+    color: var(--danger);
+    background: var(--danger-soft);
+    border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+  }
+
   .tip, .warn {
     font-size: 13.5px;
     padding: 10px 14px;
@@ -678,6 +742,779 @@
   <section>
     <div class="section-head">
       <span class="section-num">2</span>
+      <h2>El código explicado</h2>
+    </div>
+    <p class="muted" style="margin-top:-8px;">Esta es la versión comentada del bot (<span style="font-family:var(--mono)">code_documentado.py</span>), pensada para quienes no conocen Python. La sección de login se omitió en esta página pública por seguridad — está completa en el repositorio privado del proyecto.</p>
+
+    <h3 style="margin-top:26px;margin-bottom:14px;">Lo más importante, y qué se puede modificar</h3>
+    <div class="fn-cards">
+
+      <div class="fn-card">
+        <div class="fn-badge">1</div>
+        <div>
+          <h3>Lectura del Excel (codigos_NCR.xlsx)</h3>
+          <p>El bot lee 4 columnas exactas del archivo y arma una lista por cada una: el código a buscar, el nuevo código de referencia, la variable de promoción y su texto.</p>
+          <span class="fn-modify locked">No cambiar los nombres de columna</span>
+        </div>
+      </div>
+
+      <div class="fn-card">
+        <div class="fn-badge">2</div>
+        <div>
+          <h3>El bucle principal (for cod_redencion in cod_redenciones)</h3>
+          <p>Repite todo el proceso de edición una vez por cada fila del Excel, en el mismo orden en que aparecen.</p>
+          <span class="fn-modify locked">No tocar salvo que cambie el flujo de la página</span>
+        </div>
+      </div>
+
+      <div class="fn-card">
+        <div class="fn-badge">3</div>
+        <div>
+          <h3>Valores fijos de negocio: "100" y "15"</h3>
+          <p>"100" se escribe siempre en "Actualización de Variable Promo"; "15" es el límite de usos fijo en cada promoción.</p>
+          <span class="fn-modify">Modificar si cambia la regla de negocio</span>
+        </div>
+      </div>
+
+      <div class="fn-card">
+        <div class="fn-badge">4</div>
+        <div>
+          <h3>El interruptor Cancelar / Guardar (modo prueba)</h3>
+          <p>Ahora mismo cada vuelta termina en "Cancelar" para no aplicar cambios reales. El bloque de código de arriba deja comentado exactamente qué reemplazar para pasar a "Guardar".</p>
+          <span class="fn-modify">Modificar cuando se pase a modo real</span>
+        </div>
+      </div>
+
+      <div class="fn-card">
+        <div class="fn-badge">5</div>
+        <div>
+          <h3>Tiempos de espera (time, time2)</h3>
+          <p>Pausas fijas (1s) y tiempo máximo de espera (20s) para que la página reaccione.</p>
+          <span class="fn-modify">Aumentar si la página va lenta y el bot falla por timeout</span>
+        </div>
+      </div>
+
+      <div class="fn-card">
+        <div class="fn-badge">6</div>
+        <div>
+          <h3>Los XPath (rutas dentro de la página)</h3>
+          <p>Son las "direcciones" que usa el bot para encontrar cada botón o campo dentro del HTML de la página del panel NCR.</p>
+          <span class="fn-modify locked">Solo si Cencosud cambia el diseño del sistema</span>
+        </div>
+      </div>
+
+    </div>
+
+    <h3 style="margin-top:30px;margin-bottom:6px;">Código completo (sin la sección de login)</h3>
+    <p class="code-note">Puedes desplazarte dentro del recuadro para ver todo el archivo.</p>
+
+    <pre class="code-embed"><code>&quot;&quot;&quot;
+====================================================================
+ BOT CRM - REDENCION NCR (version documentada para aprendizaje)
+====================================================================
+
+QUE HACE ESTE SCRIPT (en una frase):
+Automatiza, dentro del navegador Chrome, la edicion repetitiva de
+codigos de promocion en el panel NCR, usando como fuente de datos
+un archivo Excel (codigos_NCR.xlsx).
+
+FLUJO GENERAL:
+  1. Abre Chrome y navega a la URL del panel NCR.
+  2. Pide usuario/contrasena por ventana emergente e inicia sesion.
+  3. Entra al modulo &quot;Promociones&quot;.
+  4. Pide el codigo de campana y la ruta del archivo de clientes.
+  5. Lee el Excel &quot;codigos_NCR.xlsx&quot; (4 columnas clave).
+  6. Por cada fila del Excel, repite un ciclo de edicion en la web:
+     buscar codigo -&gt; editar -&gt; cambiar referencia -&gt; configurar
+     nivel/tipo de beneficio -&gt; variable de promocion -&gt; detalles
+     adicionales -&gt; subir archivo de clientes -&gt; (Cancelar, modo
+     prueba) o Guardar si se activa el modo real.
+  7. Al final muestra cuantos procesos se ejecutaron.
+
+NOTA IMPORTANTE:
+Actualmente el script esta en MODO PRUEBA: al final de cada
+iteracion presiona el boton &quot;Cancelar&quot; en vez de &quot;Guardar&quot;, para
+no aplicar cambios reales mientras se aprende/prueba el bot.
+&quot;&quot;&quot;
+
+# ====================================================================
+#  CONCEPTOS BASICOS DE PYTHON QUE VAS A VER EN ESTE ARCHIVO
+# ====================================================================
+#
+# Si nunca has programado en Python, estas ideas te van a ayudar a
+# leer todo el archivo. No hace falta memorizarlas, solo tenerlas
+# como referencia mientras lees el codigo de abajo.
+#
+# 1) VARIABLES
+#    Una variable es un nombre que guarda un valor.
+#      nombre = &quot;Juan&quot;      -&gt; guarda un texto (string)
+#      edad = 25             -&gt; guarda un numero (int)
+#      lista = [1, 2, 3]     -&gt; guarda una lista de valores
+#    No hace falta declarar el &quot;tipo&quot; de antemano, Python lo deduce
+#    solo segun el valor que le asignes.
+#
+# 2) COMENTARIOS
+#    Todo lo que empieza con &quot;#&quot; es un comentario: Python lo ignora
+#    por completo, solo es texto explicativo para quien lee el
+#    codigo (como este bloque que estas leyendo ahora mismo).
+#    Un texto entre &quot;&quot;&quot; triples comillas &quot;&quot;&quot; tambien puede usarse
+#    como comentario de varias lineas, o como una nota que &quot;apaga&quot;
+#    un bloque de codigo completo sin borrarlo (lo veras mas abajo
+#    en el codigo original, en partes que quedaron comentadas).
+#
+# 3) INDENTACION (sangria)
+#    A diferencia de otros lenguajes que usan llaves { }, Python usa
+#    los ESPACIOS AL INICIO DE LA LINEA para saber que codigo
+#    pertenece a que bloque. Por ejemplo, todo lo que este &quot;metido&quot;
+#    hacia adentro dentro de un &quot;for&quot; pertenece a ese bucle. Si la
+#    sangria esta mal, el programa directamente no funciona.
+#
+# 4) IMPORT (traer herramientas hechas por otros)
+#    &quot;import selenium&quot; trae una libreria (una caja de herramientas
+#    ya escrita por otras personas) para poder usarla en este
+#    archivo. &quot;from selenium import webdriver&quot; trae solo una pieza
+#    especifica de esa libreria. El &quot;as&quot; le pone un apodo mas corto,
+#    por ejemplo &quot;import tkinter as tk&quot; hace que despues se pueda
+#    escribir &quot;tk.Tk()&quot; en vez de &quot;tkinter.Tk()&quot;.
+#
+# 5) OBJETOS Y METODOS (la sintaxis con puntos)
+#    En Python casi todo es un &quot;objeto&quot; que trae consigo acciones
+#    que puede hacer, llamadas &quot;metodos&quot;. Se llaman con un punto:
+#
+#        driver.get(url)
+#        ^^^^^^  ^^^ ^^^
+#        objeto  metodo  argumento (el dato que le pasas)
+#
+#    Aqui &quot;driver&quot; es el objeto que representa el navegador Chrome
+#    controlado por el bot. &quot;.get(url)&quot; le dice &quot;ve a esta pagina&quot;.
+#    Los metodos se pueden encadenar uno tras otro:
+#
+#        driver.find_element(By.ID, &#x27;boton&#x27;).click()
+#
+#    Esto se lee de izquierda a derecha: &quot;en el navegador, busca el
+#    elemento con ese ID, y luego haz clic en el&quot;.
+#
+# 6) FUNCIONES CON PARENTESIS
+#    Cualquier palabra seguida de parentesis, como sleep(1) o
+#    print(&quot;hola&quot;), es una funcion: hace algo con la informacion
+#    que le pones dentro de los parentesis (sus &quot;argumentos&quot;).
+#
+# 7) LISTAS Y SU INDICE (el numero de posicion)
+#    Una lista guarda varios valores en orden, por ejemplo:
+#
+#        colores = [&quot;rojo&quot;, &quot;verde&quot;, &quot;azul&quot;]
+#
+#    Para sacar un valor especifico se usa su POSICION entre
+#    corchetes, y OJO: en Python se empieza a contar desde el 0:
+#
+#        colores[0]  -&gt; &quot;rojo&quot;   (el primero)
+#        colores[1]  -&gt; &quot;verde&quot;  (el segundo)
+#        colores[2]  -&gt; &quot;azul&quot;   (el tercero)
+#
+#    Mas abajo en este script se usa una variable llamada &quot;cont&quot;
+#    que funciona exactamente asi: es un contador que dice &quot;en que
+#    posicion de la lista voy&quot;, y se usa como indice: por ejemplo
+#    cod_promovares[cont] significa &quot;el valor de esa lista que le
+#    corresponde a la vuelta actual del bucle&quot;.
+#
+# 8) BUCLE &quot;for&quot; (repetir un bloque de codigo varias veces)
+#    Sirve para repetir las mismas instrucciones una vez por cada
+#    elemento de una lista:
+#
+#        for color in colores:
+#            print(color)
+#
+#    Esto imprime &quot;rojo&quot;, luego &quot;verde&quot;, luego &quot;azul&quot;: la variable
+#    &quot;color&quot; va tomando, una vuelta a la vez, cada valor de la
+#    lista &quot;colores&quot;. En este bot, el &quot;for&quot; principal recorre la
+#    lista de codigos de redencion leidos del Excel, y por cada uno
+#    repite todo el proceso de edicion en la pagina web.
+#
+# 9) CONCATENAR TEXTOS (unir strings con &quot;+&quot;)
+#    El simbolo &quot;+&quot; entre textos los pega uno despues del otro:
+#
+#        &quot;Hola &quot; + &quot;mundo&quot;   -&gt;   &quot;Hola mundo&quot;
+#
+#    Este script arma varios textos asi, por ejemplo para construir
+#    la ruta (XPath) que busca un elemento especifico en la pagina,
+#    pegando el codigo de una variable en medio de un texto fijo.
+#
+# 10) contador += 1  (sumar 1 a una variable)
+#    Es una forma corta de escribir &quot;cont = cont + 1&quot;: le suma 1 al
+#    valor que ya tenia. Se usa al final de cada vuelta del &quot;for&quot;
+#    para avanzar al siguiente elemento de las listas.
+#
+# Con estas 10 ideas deberias poder seguir el resto de los
+# comentarios del archivo sin problema. Cuando aparezca algo nuevo
+# y no obvio (como una funcion de una libreria externa), se explica
+# en el momento, junto a esa linea.
+
+
+# ------------------------------------------------------------------
+# 1. LIBRERIAS
+# ------------------------------------------------------------------
+
+import tkinter as tk                       # Crea las ventanas emergentes (popups) para pedir datos al usuario
+from tkinter import simpledialog           # simpledialog.askstring() abre un cuadro de texto simple
+from tkinter import messagebox             # Muestra mensajes finales (ej: resumen de ejecucion)
+import pandas as pd                        # Lee el archivo Excel y lo convierte en listas de datos
+
+# Selenium es la libreria que controla el navegador Chrome como si
+# fuera una persona haciendo clic y escribiendo. Cada &quot;from selenium
+# import X&quot; trae una pieza distinta de esa libreria, todas se usan
+# juntas mas abajo.
+from selenium import webdriver
+from selenium.webdriver.common.by import By                       # By.ID, By.XPATH, By.CLASS_NAME: formas de decirle a Selenium &quot;como buscar&quot; un elemento
+from selenium.webdriver.common.keys import Keys                   # Keys.ENTER, Keys.ARROW_DOWN: simulan teclas especiales del teclado
+from selenium.webdriver.support.ui import WebDriverWait            # &quot;Espera hasta X segundos a que pase algo&quot;, en vez de adivinar con pausas fijas
+from selenium.webdriver.support import expected_conditions as EC   # Lista de &quot;cosas que se pueden esperar&quot;: que un boton sea clickeable, que un texto sea visible, etc.
+from selenium.webdriver.chrome.options import Options              # Configuraciones de arranque de Chrome (ej: maximizado)
+from selenium.webdriver.chrome.service import Service              # Administra el proceso interno de chromedriver (el &quot;traductor&quot; entre este script y Chrome)
+from time import sleep                                             # La funcion sleep(n) pausa el programa n segundos
+
+
+# ------------------------------------------------------------------
+# 2. CONFIGURACION INICIAL DEL NAVEGADOR
+# ------------------------------------------------------------------
+
+# Esto es una variable de texto (string) que guarda la direccion
+# web a la que el bot va a entrar. Las comillas indican que es
+# texto, no un numero ni un comando.
+url = &quot;https://test.aws.pos.pe.cencosud.net/dpc5/index.html#/admin&quot;
+
+# Options() crea un objeto de configuracion &quot;vacio&quot; para Chrome.
+options = Options()
+# .add_argument() es un metodo de ese objeto: le agrega una opcion
+# de arranque, en este caso &quot;abrir maximizado&quot;.
+options.add_argument(&quot;--start-maximized&quot;)
+
+# Service() sin argumentos usa el chromedriver disponible en el PATH
+# (o el que Selenium Manager descargue automaticamente segun la
+# version de Chrome instalada). No hace falta entender el detalle
+# tecnico: solo es la pieza que permite que Python &quot;hable&quot; con Chrome.
+service = Service()
+
+# webdriver.Chrome(...) es la funcion que realmente ABRE una ventana
+# de Chrome nueva y la deja lista para ser controlada. El resultado
+# se guarda en la variable &quot;driver&quot;: de aqui en adelante, &quot;driver&quot;
+# ES el navegador — todo lo que quieras que Chrome haga, se lo pides
+# a traves de esta variable (driver.algo()).
+driver = webdriver.Chrome(service=service, options=options)
+
+# Tiempos de espera globales (en segundos). Son numeros enteros
+# (int), no texto, por eso van sin comillas.
+driver.implicitly_wait(120)          # Espera implicita al buscar cualquier elemento
+driver.set_page_load_timeout(120)    # Tiempo maximo para que cargue una pagina
+
+print(&quot;Abriendo pagina...&quot;)   # print() muestra texto en la consola/terminal, solo para que quien corre el bot vea el progreso
+driver.get(url)               # Le dice al navegador: entra a esta direccion web
+
+
+# ------------------------------------------------------------------
+# 3. LOGIN
+# ------------------------------------------------------------------
+#
+# (Seccion omitida en esta pagina publica: pide usuario y contrasena
+# por ventana emergente y los envia a los campos de login de la
+# pagina. El codigo completo esta disponible en el repositorio
+# privado del proyecto para el equipo.)
+#
+
+# ------------------------------------------------------------------
+# 4. IR AL MODULO DE PROMOCIONES Y ELEGIR LA CAMPANA
+# ------------------------------------------------------------------
+
+print(&quot;Seleccionando modulo promociones...&quot;)
+driver.find_element(By.ID, &#x27;menu-option-promotions&#x27;).click()
+sleep(time)
+
+print(&quot;Buscando campana...&quot;)
+
+# tkinter necesita una ventana &quot;raiz&quot; para poder mostrar cualquier
+# popup. root.withdraw() la crea pero la oculta inmediatamente,
+# porque no queremos ver esa ventana vacia, solo los popups que
+# salen de simpledialog.
+root = tk.Tk()
+root.withdraw()
+
+# Pide el codigo de campana (ej: 8365542) visible en la columna
+# &quot;COD&quot; de la lista &quot;Campana&quot; del panel.
+cod_campana = simpledialog.askstring(
+    title=&quot;Codigo de campana&quot;,
+    prompt=&quot;Introduce el codigo de campana:&quot;
+)
+
+# Pide la ruta completa del archivo con la base de clientes que se
+# subira mas adelante en &quot;Importar Segmento&quot; (ej: segmento ORO,
+# PLATA o BRONCE).
+nombre_archivo = simpledialog.askstring(
+    title=&quot;Ruta y Nombre del archivo&quot;,
+    prompt=&quot;Introduce las ruta y nombre del archivo a subir:&quot;
+)
+
+# By.CLASS_NAME busca un elemento por su &quot;clase&quot; de estilo en vez de
+# su id. str(cod_campana) convierte el valor a texto por seguridad
+# (aunque ya suele venir como texto desde el popup).
+driver.find_element(By.CLASS_NAME, &#x27;el-input__inner&#x27;).send_keys(str(cod_campana))
+sleep(time)
+# Keys.ENTER simula presionar la tecla Enter del teclado.
+driver.find_element(By.CLASS_NAME, &#x27;el-input__inner&#x27;).send_keys(Keys.ENTER)
+sleep(time)
+
+# Un XPath es como una &quot;direccion&quot; muy detallada dentro del HTML de
+# la pagina, que describe exactamente donde esta un elemento (que
+# etiqueta, dentro de que otra etiqueta, en que posicion...). Se ve
+# complicado pero es solo texto: una ruta, similar a una ruta de
+# carpetas en el explorador de archivos, pero para partes de una
+# pagina web.
+ruta = &#x27;//*[@id=&quot;app&quot;]/section/section/main/div/div/div[1]/div/div[2]/div[4]/div/div/div/div[1]/div[3]/table/tbody/tr/td[2]/div/div&#x27;
+
+# WebDriverWait(driver, time2).until(condicion) significa: &quot;espera
+# hasta time2 segundos a que se cumpla esta condicion; si se cumple
+# antes, sigue de inmediato; si nunca se cumple, lanza un error&quot;.
+# EC.element_to_be_clickable(...) es la condicion &quot;que este elemento
+# ya se pueda clickear&quot; (que ya haya cargado y este visible).
+elemento = WebDriverWait(driver, time2).until(
+    EC.element_to_be_clickable((By.XPATH, ruta))
+)
+# driver.execute_script(...) ejecuta codigo JavaScript directamente
+# en la pagina. Aqui se usa para forzar el clic mediante JavaScript
+# en vez de un clic &quot;normal&quot; de Selenium, porque a veces el elemento
+# esta tapado visualmente y el clic normal fallaria.
+driver.execute_script(&quot;arguments[0].click();&quot;, elemento)
+print(&quot;campana seleccionada&quot;)
+
+driver.set_page_load_timeout(2)
+
+
+# ------------------------------------------------------------------
+# 5. LECTURA DEL EXCEL DE CODIGOS (codigos_NCR.xlsx)
+# ------------------------------------------------------------------
+#
+# El Excel debe tener EXACTAMENTE estas 4 columnas:
+#
+#   - &quot;NCR (COD REDENCION)&quot;       -&gt; codigo que se busca en el panel
+#   - &quot;PROMOVAR (COD CUPON NCR)&quot;  -&gt; nuevo valor de &quot;Referencia&quot;
+#   - &quot;PROMOVAR QUEMADO (PMV QMD)&quot;-&gt; valor de &quot;Variable de Promocion&quot;
+#   - &quot;TEXTO PROMOCIONAL&quot;         -&gt; texto que acompana a la variable
+#                                     de promocion en el desplegable
+#                                     (deben coincidir EXACTO con una
+#                                     opcion real del sistema, si no,
+#                                     el bot fallara al buscarla)
+#
+# Cada lista queda &quot;alineada&quot; por posicion: la fila 0 de una columna
+# corresponde a la fila 0 de las demas (por eso se usa el indice
+# &quot;cont&quot; para recorrerlas juntas mas abajo).
+
+# pd.read_excel(...) abre el archivo y lo convierte en una tabla que
+# pandas entiende (un &quot;DataFrame&quot;), muy parecida a una hoja de
+# Excel pero manejable desde Python. engine=&quot;openpyxl&quot; le dice con
+# que libreria interna debe leer el archivo .xlsx.
+df = pd.read_excel(&quot;codigos_NCR.xlsx&quot;, engine=&quot;openpyxl&quot;)
+
+# df[&quot;NOMBRE DE COLUMNA&quot;] saca una columna completa de la tabla.
+# A partir de ahi se encadenan 3 metodos, uno despues del otro:
+#
+#   .dropna()      -&gt; elimina las filas vacias de esa columna
+#   .astype(str)   -&gt; convierte todos los valores a texto (por si
+#                      Excel los guardo como numero)
+#   .tolist()      -&gt; convierte el resultado en una lista comun de
+#                      Python (la misma idea de lista que viste en
+#                      el punto 7 de la seccion de conceptos basicos)
+#
+# El resultado final es una lista de textos, uno por cada fila del
+# Excel, guardada en cada una de estas 4 variables:
+cod_redenciones = df[&quot;NCR (COD REDENCION)&quot;].dropna().astype(str).tolist()
+cod_promovares = df[&quot;PROMOVAR (COD CUPON NCR)&quot;].dropna().astype(str).tolist()
+variable_promociones = df[&quot;PROMOVAR QUEMADO (PMV QMD)&quot;].dropna().astype(str).tolist()
+texto_promocional = df[&quot;TEXTO PROMOCIONAL&quot;].dropna().astype(str).tolist()
+
+# [:5] es una forma de &quot;recortar&quot; una lista y quedarse solo con los
+# primeros 5 elementos (util aqui solo para mostrar una muestra en
+# consola, sin imprimir el Excel completo si tiene muchas filas).
+print(&quot;Codigos de redencion:&quot;, cod_redenciones[:5])
+print(&quot;Codigos promovar:&quot;, cod_promovares[:5])
+print(&quot;Promovar quemado:&quot;, variable_promociones[:5])
+
+cont = 0   # Contador: indica en que fila del Excel vamos (0 = primera fila, como viste en el punto 7)
+
+
+# ------------------------------------------------------------------
+# 6. CICLO PRINCIPAL: una vuelta completa por cada fila del Excel
+# ------------------------------------------------------------------
+#
+# &quot;for cod_redencion in cod_redenciones:&quot; (punto 8 de los conceptos
+# basicos) repite TODO el bloque de abajo (todo lo que esta con
+# sangria/indentado dentro del for) una vez por cada valor de la
+# lista cod_redenciones. En cada vuelta, &quot;cod_redencion&quot; toma el
+# siguiente codigo de la lista, en orden.
+
+for cod_redencion in cod_redenciones:
+
+    print(&quot;Buscando codigo de redencion...&quot;, cod_redencion)
+
+    # WebDriverWait guardado en una variable para reutilizarlo varias
+    # veces mas abajo sin tener que escribir toda la configuracion
+    # de nuevo cada vez.
+    wait = WebDriverWait(driver, time2)
+
+    # --- 6.1 Buscar el codigo de redencion en el panel ---
+    campo_codigo = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;(//input[@placeholder=&#x27;Cod.&#x27;])[2]&quot;)
+        )
+    )
+    campo_codigo.click()
+    campo_codigo.clear()                       # .clear() vacia el campo de texto antes de escribir, por si ya tenia algo de la vuelta anterior
+    campo_codigo.send_keys(str(cod_redencion))  # escribe el codigo de esta vuelta del for
+
+    print(&quot;Buscando codigo de redencion ingresado&quot;)
+    boton_buscar = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//span[text()=&#x27;Buscar&#x27;]/ancestor::button&quot;)
+        )
+    )
+    boton_buscar.click()
+
+    # --- 6.2 Entrar en modo edicion del resultado encontrado ---
+    print(&quot;Ingresando a edicion...&quot;)
+    boton_editar = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;(//i[@class=&#x27;fas fa-edit&#x27;]/ancestor::button)[2]&quot;)
+        )
+    )
+    boton_editar.click()
+    sleep(time)
+
+    # --- 6.3 Cambiar la &quot;Referencia&quot; por el codigo Promovar ---
+    print(&quot;Cambiando referencia por codigo promovar...&quot;)
+    wait = WebDriverWait(driver, time2)
+
+    boton = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;(//div[contains(@class,&#x27;tableReward&#x27;)]//button[.//i[contains(@class,&#x27;fa-edit&#x27;)]])[1]&quot;)
+        )
+    )
+    sleep(time)
+    driver.execute_script(&quot;arguments[0].scrollIntoView();&quot;, boton)   # Hace scroll en la pagina hasta que el boton sea visible
+    driver.execute_script(&quot;arguments[0].click();&quot;, boton)             # Y ahi si, hace clic
+
+    wait = WebDriverWait(driver, time2)
+    campo = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//input[@placeholder=&#x27;Referencia&#x27;]&quot;)
+        )
+    )
+    campo.clear()
+
+    # AQUI es donde se usa el contador &quot;cont&quot; como indice (punto 7):
+    # cod_promovares[cont] saca, de esa lista, el valor que le
+    # corresponde EXACTAMENTE a esta vuelta del for. Si vamos en la
+    # tercera vuelta del bucle (cont = 2), esto trae el tercer valor
+    # de cod_promovares, que es la pareja del cod_redencion actual.
+    cod_promovar = cod_promovares[cont]
+    campo.send_keys(str(cod_promovar))
+    print(&quot;Actualizacion de promovar&quot;)
+    sleep(time)
+
+    # Confirmar el cambio de Referencia.
+    botonp = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//button[.//span[normalize-space()=&#x27;Aceptar&#x27;]]&quot;)
+        )
+    )
+    driver.execute_script(&quot;arguments[0].scrollIntoView();&quot;, botonp)
+    sleep(time)
+    botonp.click()
+
+    # --- 6.4 Configurar Nivel de Beneficio ---
+    print(&quot;configurando NIVEL DE BENEFICIO&quot;)
+    wait = WebDriverWait(driver, time2)
+    boton = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;(//button[.//i[contains(@class,&#x27;fa-plus&#x27;)]])[2]&quot;)
+        )
+    )
+    sleep(time)
+    boton.click()
+
+    wait = WebDriverWait(driver, time2)
+    input_click = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//input[@placeholder=&#x27;Nivel del Beneficio&#x27;]&quot;)
+        )
+    )
+    input_click.click()   # Abre el desplegable de opciones
+
+    print(&quot;Configurando nivel de beneficio&quot;)
+    opcion = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//div[contains(@class,&#x27;el-select-dropdown&#x27;)]//span[text()=&#x27;Total Descontable de la Transaccion&#x27;]&quot;)
+        )
+    )
+    opcion.click()   # Elige la opcion fija &quot;Total Descontable de la Transaccion&quot; (siempre la misma para todas las filas)
+
+    # --- 6.5 Configurar Tipo de Beneficio ---
+    print(&quot;Configurando tipo de beneficio&quot;)
+    wait = WebDriverWait(driver, time2)
+    input_click = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//input[@placeholder=&#x27;Tipo de Beneficio&#x27;]&quot;)
+        )
+    )
+    input_click.click()
+
+    opcion2 = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//div[contains(@class,&#x27;el-select-dropdown&#x27;) and not(contains(@style,&#x27;display: none&#x27;))]//span[text()=&#x27;Actualizacion de Variable Promo&#x27;]&quot;)
+        )
+    )
+    opcion2.click()
+
+    # --- 6.6 Escribir &quot;100&quot; en Actualizacion de Variable Promo ---
+    print(&quot;Configurando Actualizacion de Variable Promo&quot;)
+    campo = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//input[@placeholder=&#x27;Actualizacion de Variable Promo&#x27;]&quot;)
+        )
+    )
+    campo.clear()
+    campo.send_keys(&quot;100&quot;)   # Valor fijo requerido por el proceso de negocio (es siempre &quot;100&quot;, texto entre comillas aunque sea un numero)
+    print(&quot;Actualizacion de Variable Promo&quot;)
+
+    # --- 6.7 Elegir la &quot;Variable de Promocion&quot; correcta ---
+    #
+    # Este es el paso mas delicado: se escribe el codigo (variable_promocion)
+    # y el sistema muestra un desplegable con opciones tipo
+    # &quot;501 - Descuento Julio Cliente Oro&quot;. Hay que encontrar la opcion
+    # cuyo texto sea EXACTAMENTE &quot;{variable_promocion} - {texto_promo}&quot;.
+    print(&quot;Configurando Variable de Promocion&quot;)
+    campo = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//input[@placeholder=&#x27;Variable de Promocion&#x27;]&quot;)
+        )
+    )
+
+    # De nuevo se usa &quot;cont&quot; como indice, ahora sobre dos listas
+    # distintas, para traer los dos valores que le corresponden a
+    # esta misma vuelta del for.
+    variable_promocion = variable_promociones[cont]
+    texto_promo = texto_promocional[cont]
+
+    campo.click()
+    campo.clear()
+    campo.send_keys(str(variable_promocion))
+
+    # Espera a que el sistema muestre al menos una opcion en el desplegable.
+    wait.until(
+        EC.presence_of_element_located(
+            (By.XPATH, &quot;//div[contains(@class,&#x27;el-select-dropdown&#x27;)]//li&quot;)
+        )
+    )
+
+    # Aqui se arma un XPath &quot;a medida&quot; pegando texto con &quot;+&quot; (punto 9
+    # de los conceptos basicos): se busca, entre todas las opciones
+    # del desplegable, la que contenga exactamente el texto
+    # &quot;{variable_promocion} - {texto_promo}&quot; (por ejemplo &quot;501 -
+    # Descuento Julio Cliente Oro&quot;). Si esa combinacion de texto no
+    # existe tal cual en el sistema real, esta linea fallara con un
+    # error de tiempo de espera agotado (timeout).
+    opcion = wait.until(
+        EC.element_to_be_clickable((
+            By.XPATH,
+            &quot;//div[contains(@class,&#x27;el-select-dropdown&#x27;)]//li[.//span[contains(text(),&#x27;&quot;
+            + str(variable_promocion) + &quot; - &quot; + texto_promo + &quot;&#x27;)]]&quot;
+        ))
+    )
+    sleep(time)
+    opcion.click()
+    sleep(time)
+
+    # Confirmar esta seccion (Nivel/Tipo/Variable de beneficio).
+    boton = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//button[.//span[normalize-space()=&#x27;Aceptar&#x27;]]&quot;)
+        )
+    )
+    driver.execute_script(&quot;arguments[0].scrollIntoView();&quot;, boton)
+    sleep(time)
+    boton.click()
+    print(&quot;aceptar&quot;)
+
+    # --- 6.8 Detalles adicionales: texto promocional y limites ---
+    print(&quot;Configurando detalles adicionales...&quot;)
+    wait = WebDriverWait(driver, time2)
+
+    collapse = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//div[contains(@class,&#x27;el-collapse-item__header&#x27;) and contains(text(),&#x27;Detalles&#x27;)]&quot;)
+        )
+    )
+    sleep(time)
+    collapse.click()   # Despliega una seccion plegada de la pagina (como un acordeon)
+    sleep(time)
+
+    print(&quot;Configurando Limites...&quot;)
+    sleep(time)
+    driver.find_element(By.ID, &#x27;tab-1&#x27;).click()   # Cambia a la pestana &quot;1&quot; dentro de esa seccion
+
+    # Marcar el checkbox &quot;Promocion dirigida&quot;.
+    wait = WebDriverWait(driver, time2)
+    checkbox = wait.until(
+        EC.visibility_of_element_located(
+            (By.XPATH, &quot;//span[normalize-space()=&#x27;Promocion dirigida&#x27;]/preceding-sibling::span&quot;)
+        )
+    )
+    checkbox.click()
+    sleep(time)
+
+    # Reescribir el texto del ticket (se toma el valor que ya trae el
+    # campo &quot;descripcionTicket&quot; y se copia al textarea de &quot;Texto Promocional&quot;).
+    campo = driver.find_element(By.ID, &quot;descripcionTicket&quot;)
+    # .get_attribute(&quot;value&quot;) lee el contenido actual de un campo de
+    # texto (a diferencia de .send_keys(), que ESCRIBE; esto LEE).
+    valor = campo.get_attribute(&quot;value&quot;)
+
+    wait = WebDriverWait(driver, time2)
+    sleep(time)
+
+    textarea = wait.until(
+        EC.visibility_of_element_located(
+            (By.XPATH, &quot;//textarea[contains(@placeholder,&#x27;Texto Promocional&#x27;)]&quot;)
+        )
+    )
+    sleep(time)
+    textarea.click()
+    textarea.clear()
+    textarea.send_keys(valor)   # Pega ahi el mismo texto que se leyo un poco mas arriba
+
+    # Limite de usos fijo en 15 (regla de negocio actual).
+    wait = WebDriverWait(driver, time2)
+    campo = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//input[@placeholder=&#x27;Limite de usos&#x27;]&quot;)
+        )
+    )
+    sleep(time)
+    campo.click()
+    campo.clear()
+    campo.send_keys(&quot;15&quot;)
+
+    # --- 6.9 Subir el archivo con la base de clientes (segmento) ---
+    wait = WebDriverWait(driver, time2)
+    print(&quot;Importando Segmento...&quot;)
+    input_file = wait.until(
+        EC.presence_of_element_located(
+            (By.XPATH, &quot;//span[contains(text(),&#x27;Importar Segmento&#x27;)]/ancestor::button/following::input[@type=&#x27;file&#x27;][1]&quot;)
+        )
+    )
+
+    # r&quot;&quot; + texto: la &quot;r&quot; antes de las comillas crea un &quot;raw string&quot;
+    # (texto en crudo), donde las barras invertidas \ de una ruta de
+    # Windows no se interpretan como caracteres especiales. Sumarle
+    # &quot;&quot; no cambia nada en la practica, es solo una forma de dejar
+    # explicito que el resultado es un raw string.
+    ruta_archivo = r&quot;&quot; + nombre_archivo
+
+    # El input de tipo &quot;file&quot; esta oculto por diseno (Element UI), asi
+    # que se fuerza a que sea visible antes de poder escribirle una ruta.
+    # Este bloque entre comillas triples es JavaScript, no Python: se
+    # le pasa como texto a driver.execute_script() para que lo corra
+    # el navegador.
+    driver.execute_script(&quot;&quot;&quot;
+    arguments[0].style.display = &#x27;block&#x27;;
+    arguments[0].style.visibility = &#x27;visible&#x27;;
+    arguments[0].style.opacity = 1;
+    &quot;&quot;&quot;, input_file)
+
+    # send_keys() sobre un input de tipo &quot;file&quot; simula seleccionar
+    # ese archivo desde el explorador de Windows, escribiendo su
+    # ruta completa.
+    input_file.send_keys(ruta_archivo)
+
+    print(&quot;Guardando cambios...&quot;)
+    sleep(time)
+
+    # --- 6.10 MODO PRUEBA: presiona &quot;Cancelar&quot; en vez de &quot;Guardar&quot; ---
+    #
+    # Para pasar a modo real (guardar de verdad), hay que reemplazar
+    # este bloque por el boton &quot;Guardar&quot; (ver comentario mas abajo).
+    wait = WebDriverWait(driver, time2)
+
+    # EC.invisibility_of_element_located espera lo CONTRARIO a lo
+    # habitual: a que un elemento DEJE de estar visible (aqui, que
+    # desaparezca el icono de &quot;cargando&quot;).
+    wait.until(
+        EC.invisibility_of_element_located((By.CLASS_NAME, &quot;el-loading-mask&quot;))
+    )
+
+    boton_cancelar = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, &quot;//button[.//span[normalize-space()=&#x27;Cancelar&#x27;]]&quot;)
+        )
+    )
+
+    driver.execute_script(&quot;&quot;&quot;
+    arguments[0].scrollIntoView();
+    window.scrollBy(0, -150);
+    &quot;&quot;&quot;, boton_cancelar)
+
+    driver.execute_script(&quot;arguments[0].click();&quot;, boton_cancelar)
+
+    # ---------------------------------------------------------------
+    # PARA ACTIVAR EL MODO REAL (guardar de verdad), reemplazar el
+    # bloque 6.10 de arriba por esto:
+    #
+    #   boton_guardar = wait.until(
+    #       EC.element_to_be_clickable(
+    #           (By.XPATH, &quot;//button[.//span[normalize-space()=&#x27;Guardar&#x27;]]&quot;)
+    #       )
+    #   )
+    #   driver.execute_script(&quot;arguments[0].scrollIntoView();&quot;, boton_guardar)
+    #   driver.execute_script(&quot;arguments[0].click();&quot;, boton_guardar)
+    # ---------------------------------------------------------------
+
+    print(&quot;Guardado ejecutado correctamente&quot;)
+    sleep(time)
+
+    cont += 1   # Igual que &quot;cont = cont + 1&quot; (punto 10): avanza al siguiente indice para la proxima vuelta del for
+
+    # Se recrea la ventana oculta de Tkinter (necesaria para que los
+    # popups sigan funcionando en iteraciones futuras si se agregan).
+    root = tk.Tk()
+    root.withdraw()
+
+# &lt;- Aqui termina la sangria del &quot;for&quot;: todo lo de arriba (desde
+#    &quot;for cod_redencion in...&quot; hasta la linea anterior a esta) se
+#    repite una vez por cada codigo de redencion. Lo que sigue abajo
+#    ya NO esta indentado dentro del for, asi que corre UNA SOLA VEZ,
+#    despues de que termina de repetirse todo el bucle.
+
+
+# ------------------------------------------------------------------
+# 7. RESUMEN FINAL Y CIERRE
+# ------------------------------------------------------------------
+
+# Concatenacion de texto (punto 9): pega el texto fijo con el valor
+# final de &quot;cont&quot;, convertido a texto con str() porque no se puede
+# sumar (+) un texto con un numero directamente en Python.
+msg = &quot;Cantidad de procesos ejecutados: &quot; + str(cont)
+
+messagebox.showinfo(
+    title=&quot;Informacion&quot;,
+    message=msg
+)
+
+html = driver.page_source   # Guarda el HTML final de la pagina (no se usa mas adelante; queda disponible por si se quiere depurar)
+
+driver.quit()   # Cierra el navegador y termina la conexion con Selenium
+</code></pre>
+
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">3</span>
       <h2>Glosario rápido</h2>
     </div>
     <dl class="glossary">
@@ -702,7 +1539,7 @@
 
   <section>
     <div class="section-head">
-      <span class="section-num">3</span>
+      <span class="section-num">4</span>
       <h2>Si algo sale mal</h2>
     </div>
 
