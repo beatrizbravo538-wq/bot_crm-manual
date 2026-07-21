@@ -1,0 +1,786 @@
+<title>Manual de Git — Equipo bot_crm</title>
+<style>
+  :root {
+    --paper: #f4f5f1;
+    --paper-raised: #ffffff;
+    --ink: #1e231f;
+    --ink-soft: #4d564e;
+    --accent: #2f6b4f;
+    --accent-soft: #dce8df;
+    --accent-line: #b9d2c1;
+    --amber: #8f5a17;
+    --amber-soft: #f3e6d2;
+    --danger: #8f3a2a;
+    --danger-soft: #f5e2dd;
+    --rule: #d8dad4;
+    --term-bg: #14170f;
+    --term-text: #8fe3b0;
+    --term-dim: #5c8a6d;
+    --radius: 10px;
+    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    --sans: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "Cascadia Code", Consolas, "SFMono-Regular", Menlo, monospace;
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #12140f;
+    --paper-raised: #191c15;
+    --ink: #e9eae3;
+    --ink-soft: #aab2a4;
+    --accent: #6fbf97;
+    --accent-soft: #1e2b21;
+    --accent-line: #2c4535;
+    --amber: #d79a4b;
+    --amber-soft: #2e2415;
+    --danger: #e08b74;
+    --danger-soft: #2e1e19;
+    --rule: #2a2d25;
+    --term-bg: #0b0d09;
+    --term-text: #8fe3b0;
+    --term-dim: #4a715a;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #12140f;
+      --paper-raised: #191c15;
+      --ink: #e9eae3;
+      --ink-soft: #aab2a4;
+      --accent: #6fbf97;
+      --accent-soft: #1e2b21;
+      --accent-line: #2c4535;
+      --amber: #d79a4b;
+      --amber-soft: #2e2415;
+      --danger: #e08b74;
+      --danger-soft: #2e1e19;
+      --rule: #2a2d25;
+      --term-bg: #0b0d09;
+      --term-text: #8fe3b0;
+      --term-dim: #4a715a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+
+  header.masthead {
+    margin-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(32px, 5vw, 44px);
+    line-height: 1.12;
+    margin: 0 0 14px;
+    text-wrap: balance;
+    font-weight: 400;
+  }
+
+  .lede {
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 60ch;
+    margin: 0;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 400;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 650;
+    margin: 0 0 4px;
+  }
+
+  section {
+    margin-top: 52px;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 12px;
+    margin-bottom: 22px;
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  p { margin: 0 0 12px; }
+  .muted { color: var(--ink-soft); }
+
+  /* ---- Selector de persona ---- */
+  .picker {
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+  }
+
+  .picker-label {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+
+  .chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    font-family: var(--sans);
+    font-size: 14.5px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .chip:hover { border-color: var(--accent-line); }
+
+  .chip[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fbfffc;
+  }
+
+  .chip:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---- Diagrama de ramas ---- */
+  .tree {
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 28px 24px 22px;
+    margin-top: 18px;
+  }
+
+  .tree-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+    color: var(--accent);
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 4px;
+  }
+
+  .tree-branches {
+    display: flex;
+    gap: 14px;
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px dashed var(--rule);
+    flex-wrap: wrap;
+  }
+
+  .tree-branch {
+    flex: 1 1 140px;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink-soft);
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .tree-branch.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .tree-branch .who {
+    display: block;
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-top: 4px;
+    color: inherit;
+    opacity: 0.85;
+  }
+
+  /* ---- Pasos numerados ---- */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 14px;
+  }
+
+  .step-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid var(--accent-line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .step-body h3 { margin-bottom: 6px; }
+  .step-body p { font-size: 14.5px; }
+
+  pre.term {
+    margin: 8px 0 4px;
+    background: var(--term-bg);
+    color: var(--term-text);
+    font-family: var(--mono);
+    font-size: 13.5px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+
+  pre.term .prompt { color: var(--term-dim); }
+  pre.term .comment { color: var(--term-dim); font-style: italic; }
+
+  .tip, .warn {
+    font-size: 13.5px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 8px;
+  }
+
+  .tip {
+    background: var(--amber-soft);
+    color: var(--amber);
+    border: 1px solid color-mix(in srgb, var(--amber) 35%, transparent);
+  }
+
+  .agent-prompt {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+  }
+
+  .agent-prompt .who {
+    flex-shrink: 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+
+  .agent-prompt p {
+    margin: 0;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink);
+  }
+
+  /* ---- Glosario ---- */
+  .glossary {
+    display: grid;
+    grid-template-columns: minmax(120px, auto) 1fr;
+    row-gap: 14px;
+    column-gap: 20px;
+    font-size: 14.5px;
+  }
+
+  .glossary dt {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .glossary dd {
+    margin: 0;
+    color: var(--ink-soft);
+  }
+
+  /* ---- FAQ ---- */
+  details.faq {
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 2px 16px;
+    margin-bottom: 10px;
+    background: var(--paper-raised);
+  }
+
+  details.faq summary {
+    cursor: pointer;
+    padding: 12px 0;
+    font-weight: 600;
+    font-size: 14.5px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  details.faq summary::-webkit-details-marker { display: none; }
+
+  details.faq summary::before {
+    content: "+";
+    font-family: var(--mono);
+    color: var(--accent);
+    width: 14px;
+    flex-shrink: 0;
+  }
+
+  details.faq[open] summary::before { content: "\2212"; }
+
+  details.faq .faq-body {
+    padding: 0 0 14px 24px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  .danger-box {
+    background: var(--danger-soft);
+    color: var(--danger);
+    border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    margin-top: 8px;
+  }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  @media (max-width: 480px) {
+    .glossary { grid-template-columns: 1fr; row-gap: 4px; }
+    .glossary dt { margin-top: 8px; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <p class="eyebrow">bot_crm &middot; guía de colaboración</p>
+    <h1>Manual de Git para el equipo</h1>
+    <p class="lede">Todo lo que necesitas para trabajar en tu rama del proyecto sin perderle el hilo a Git. Elige tu nombre abajo y las instrucciones se ajustan a tu carpeta y tu rama.</p>
+    <div class="tip" style="margin-top:18px;">Si nunca has usado Git, no pasa nada: no necesitas memorizar ni un solo comando. En cada paso te decimos exactamente qué escribirle al agente en tus propias palabras — el agente hace el resto. Los comandos en negro que ves debajo de cada paso quedan ahí solo para que, con el tiempo, entiendas qué está pasando por dentro.</div>
+  </header>
+
+  <section aria-label="Selector de persona">
+    <div class="picker">
+      <p class="picker-label">¿Quién eres?</p>
+      <div class="chips" role="group" aria-label="Selecciona tu nombre">
+        <button class="chip" data-person="pedro" aria-pressed="false">Pedro</button>
+        <button class="chip" data-person="hernando" aria-pressed="false">Hernando</button>
+        <button class="chip" data-person="ibeth" aria-pressed="false">Ibeth</button>
+      </div>
+    </div>
+
+    <div class="tree">
+      <span class="tree-main">main</span>
+      <p class="muted" style="font-size:13px;margin-top:6px;">La rama estable del proyecto. Nadie trabaja aquí directamente.</p>
+      <div class="tree-branches">
+        <div class="tree-branch" data-branch-box="pedro">
+          pedro
+          <span class="who">Pedro</span>
+        </div>
+        <div class="tree-branch" data-branch-box="hernando">
+          hernando
+          <span class="who">Hernando</span>
+        </div>
+        <div class="tree-branch" data-branch-box="ibeth">
+          ibeth
+          <span class="who">Ibeth</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">0</span>
+      <h2>Antes de empezar</h2>
+    </div>
+
+    <div class="step" style="margin-bottom:20px;">
+      <div class="step-badge">a</div>
+      <div class="step-body">
+        <h3>Instala Git</h3>
+        <p>Abre PowerShell y comprueba si ya lo tienes:</p>
+        <pre class="term"><span class="comment"># comprobar si Git ya está instalado</span>
+<span class="prompt">&gt;</span> git --version</pre>
+        <p>Si sale un error, descárgalo desde <span style="font-family:var(--mono)">git-scm.com/download/win</span> e instálalo con las opciones por defecto.</p>
+      </div>
+    </div>
+
+    <div class="step" style="margin-bottom:20px;">
+      <div class="step-badge">b</div>
+      <div class="step-body">
+        <h3>Pide tu invitación al repositorio</h3>
+        <p>El repositorio es privado. Bea debe agregarte como colaborador desde GitHub antes de que puedas descargar o subir nada. Te llegará un correo de invitación — acéptalo con tu cuenta de GitHub (créate una gratis en <span style="font-family:var(--mono)">github.com</span> si no tienes).</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-badge">c</div>
+      <div class="step-body">
+        <h3>Descarga tu rama a tu computadora</h3>
+        <p>Elige una carpeta (por ejemplo el Escritorio), abre PowerShell ahí, y corre:</p>
+        <pre class="term"><span class="comment"># descarga solo tu rama, en una carpeta con tu nombre</span>
+<span class="prompt">&gt;</span> git clone -b <span data-field="branch">pedro</span> https://github.com/beatrizbravo538-wq/bot_crm.git <span data-field="folder">bot_crm_pedro</span></pre>
+        <p>La primera vez que subas algo, Git te pedirá iniciar sesión con tu cuenta de GitHub (se abre el navegador). Es normal, solo autoriza y listo.</p>
+      </div>
+    </div>
+
+    <div class="step" style="margin-bottom:20px;">
+      <div class="step-badge">c.1</div>
+      <div class="step-body">
+        <h3>Activa GitHub Copilot (gratis) en VS Code</h3>
+        <p>Dentro de VS Code, abre el ícono de <strong>Extensiones</strong> (barra lateral izquierda), busca <span style="font-family:var(--mono)">GitHub Copilot Chat</span> e instálala (incluye Copilot). Al iniciar sesión con tu cuenta de GitHub, VS Code te ofrecerá activar <strong>Copilot Free</strong> — acéptalo, no pide tarjeta ni pago.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-badge">d</div>
+      <div class="step-body">
+        <h3>Abre la carpeta en VS Code con el agente</h3>
+        <p>En VS Code: <span style="font-family:var(--mono)">Archivo → Abrir carpeta…</span> y selecciona tu carpeta (<span data-field="folder-inline">bot_crm_pedro</span>). Luego abre el panel de <strong>Copilot Chat</strong>, cambia el modo a <strong>Agent</strong> (menú desplegable junto al cuadro de texto) y escríbele en español lo que necesitas — no hace falta que recuerdes el comando exacto de memoria.</p>
+        <div class="tip">El agente va a pedirte confirmación antes de subir cambios a GitHub o hacer algo que afecte al repositorio compartido. Si te pregunta, revisa lo que dice y confirma solo si tiene sentido.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">1</span>
+      <h2>Tu rutina diaria</h2>
+    </div>
+    <p class="muted" style="margin-top:-8px;margin-bottom:24px;">Sigue estos pasos en este orden cada vez que te sientes a trabajar. Todo se ejecuta dentro de tu carpeta <span data-field="folder-inline">bot_crm_pedro</span>.</p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-badge">1</div>
+        <div class="step-body">
+          <h3>Abre tu carpeta en VS Code</h3>
+          <p>No necesitas abrir una terminal a mano: con VS Code abierto en tu carpeta (<span data-field="folder-inline">bot_crm_pedro</span>), abre el panel del agente y empieza a escribirle. Él abre la terminal por ti cuando la necesita.</p>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"Confirma en qué rama y carpeta estoy antes de que empiece a trabajar."</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">2</div>
+        <div class="step-body">
+          <h3>Trae los cambios más recientes</h3>
+          <p>Antes de tocar nada, sincroniza tu copia con lo último que haya en tu rama:</p>
+          <pre class="term"><span class="prompt">&gt;</span> git pull</pre>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"Trae los últimos cambios de mi rama antes de que empiece a trabajar."</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">3</div>
+        <div class="step-body">
+          <h3>Edita el código</h3>
+          <p>Abre <span style="font-family:var(--mono)">code_test.py</span> o <span style="font-family:var(--mono)">code_documentado.py</span> y haz tus cambios. Puedes escribirlos tú mismo, o pedirle al agente que los haga por ti. Git no hace nada todavía — solo observa la carpeta.</p>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"En code_test.py, cambia [explica qué necesitas] — explícame qué hiciste cuando termines."</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">4</div>
+        <div class="step-body">
+          <h3>Revisa qué cambió</h3>
+          <p>Te muestra en rojo los archivos que modificaste, sin subir nada aún:</p>
+          <pre class="term"><span class="prompt">&gt;</span> git status</pre>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"¿Qué archivos he modificado hasta ahora?"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">5</div>
+        <div class="step-body">
+          <h3>Marca los cambios para guardarlos</h3>
+          <p>El punto significa "todos los archivos que cambié":</p>
+          <pre class="term"><span class="prompt">&gt;</span> git add .</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">6</div>
+        <div class="step-body">
+          <h3>Guarda el avance con un mensaje</h3>
+          <p>El mensaje describe qué hiciste, en pocas palabras:</p>
+          <pre class="term"><span class="prompt">&gt;</span> git commit -m "Ajusto tiempos de espera en el login"</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">7</div>
+        <div class="step-body">
+          <h3>Sube tus cambios a GitHub</h3>
+          <pre class="term"><span class="prompt">&gt;</span> git push</pre>
+          <div class="tip">Este paso sube tus cambios a tu rama (<span data-field="branch-inline">pedro</span>) en GitHub. Nunca toca <span style="font-family:var(--mono)">main</span> ni las ramas de tus compañeros.</div>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"Guarda mis cambios con un commit que diga '[describe lo que hiciste]' y súbelos a mi rama."</p>
+          </div>
+          <p class="muted" style="font-size:13px;margin-top:8px;">Esto reemplaza los pasos 5, 6 y 7: el agente hace <span style="font-family:var(--mono)">add</span>, <span style="font-family:var(--mono)">commit</span> y <span style="font-family:var(--mono)">push</span> por ti, pero te va a mostrar qué va a subir antes de confirmarlo.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">1.5</span>
+      <h2>Otras cosas que le puedes pedir al agente</h2>
+    </div>
+    <p class="muted" style="margin-top:-8px;margin-bottom:20px;">No hace falta que sepas el comando para nada de esto — descríbelo con tus palabras, como en los ejemplos:</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-badge">?</div>
+        <div class="step-body">
+          <h3>Ver en qué rama estás</h3>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"¿En qué rama estoy y hay algo sin subir?"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">?</div>
+        <div class="step-body">
+          <h3>Deshacer un cambio antes de subirlo</h3>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"Me equivoqué en lo último que edité y todavía no lo subí. Regrésalo como estaba."</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">?</div>
+        <div class="step-body">
+          <h3>Revisar si hay cambios nuevos de tus compañeros en main</h3>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"¿Hay algo nuevo en main que debería traer a mi rama?"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">?</div>
+        <div class="step-body">
+          <h3>Entender un error que no reconoces</h3>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"Me salió este error: [pega el mensaje]. ¿Qué significa y qué hago?"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">?</div>
+        <div class="step-body">
+          <h3>Pedir que te explique el código antes de tocarlo</h3>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"Antes de cambiar nada, explícame qué hace esta parte del código."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">2</span>
+      <h2>Glosario rápido</h2>
+    </div>
+    <dl class="glossary">
+      <dt>repositorio</dt>
+      <dd>La carpeta del proyecto completa, con todo su historial de cambios. En GitHub le decimos "repo".</dd>
+      <dt>rama (branch)</dt>
+      <dd>Una copia paralela del proyecto donde puedes trabajar sin afectar a los demás. La tuya se llama como tú.</dd>
+      <dt>commit</dt>
+      <dd>Una "foto" guardada de tus cambios, con un mensaje explicando qué hiciste.</dd>
+      <dt>push</dt>
+      <dd>Subir tus commits desde tu computadora hacia GitHub.</dd>
+      <dt>pull</dt>
+      <dd>Bajar a tu computadora los cambios que ya están en GitHub.</dd>
+      <dt>clone</dt>
+      <dd>Descargar por primera vez una copia completa del repositorio a tu computadora.</dd>
+      <dt>el agente</dt>
+      <dd>GitHub Copilot Chat en modo Agente, dentro de VS Code. Le escribes en español lo que quieres hacer y él traduce eso a los comandos de Git correspondientes, pidiéndote confirmación antes de ejecutar comandos o subir cambios a GitHub.</dd>
+      <dt>Copilot Free</dt>
+      <dd>El plan gratuito de GitHub Copilot, con un número limitado de mensajes y sugerencias al mes. Suficiente para el uso normal de este proyecto.</dd>
+    </dl>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">3</span>
+      <h2>Si algo sale mal</h2>
+    </div>
+
+    <details class="faq">
+      <summary>Me sale "fatal: not a git repository"</summary>
+      <div class="faq-body">Significa que tu terminal no está abierta dentro de la carpeta del proyecto. Revisa que el Explorador esté mostrando <span style="font-family:var(--mono)">bot_crm_&lt;tu nombre&gt;</span> antes de abrir la terminal ahí.</div>
+    </details>
+
+    <details class="faq">
+      <summary>git push me pide usuario y contraseña, y falla</summary>
+      <div class="faq-body">GitHub ya no acepta contraseña normal por este medio. Deja que se abra el navegador para iniciar sesión (Git te lo ofrece automáticamente), o avísale a Bea para configurarte el acceso.</div>
+    </details>
+
+    <details class="faq">
+      <summary>Veo un mensaje sobre "conflicto" (conflict)</summary>
+      <div class="faq-body">Pasa cuando dos personas editaron la misma línea del mismo archivo. No lo resuelvas a ciegas — guarda tu trabajo y escríbele a Bea antes de seguir.</div>
+    </details>
+
+    <details class="faq">
+      <summary>¿Puedo dañar el trabajo de Pedro, Hernando o Ibeth?</summary>
+      <div class="faq-body">No mientras trabajes solo en tu propia rama. Cada quien tiene la suya, separada de las demás y de <span style="font-family:var(--mono)">main</span>.</div>
+    </details>
+
+    <details class="faq">
+      <summary>No sé qué comando usar, ¿qué le escribo al agente?</summary>
+      <div class="faq-body">Descríbele en tus palabras qué quieres lograr (ej: "quiero guardar mis cambios y subirlos" o "¿en qué rama estoy?"). No necesitas memorizar sintaxis de Git — para eso está el agente. Si el agente te pregunta algo que no entiendes antes de confirmar una acción, pregúntale a él qué significa antes de aceptar.</div>
+    </details>
+
+    <details class="faq">
+      <summary>El agente me ofrece hacer algo que suena arriesgado (forzar, sobrescribir, borrar rama)</summary>
+      <div class="faq-body">No lo aceptes sin avisarle a Bea primero. Nunca deberías necesitar "forzar" nada en tu trabajo diario — si el agente lo sugiere, probablemente algo salió distinto a lo esperado.</div>
+    </details>
+
+    <div class="danger-box">Si algo se ve muy raro o un comando lanza un error que no reconoces: detente y pregunta antes de seguir escribiendo comandos. Es más fácil arreglar algo a tiempo que deshacer varios pasos.</div>
+  </section>
+
+  <footer>
+    Cualquier duda, escríbele a Bea. Este manual cubre el uso diario — no necesitas saber nada más de Git para colaborar en <span style="font-family:var(--mono)">bot_crm</span>.
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var people = {
+      pedro: { branch: "pedro", folder: "bot_crm_pedro" },
+      hernando: { branch: "hernando", folder: "bot_crm_hernando" },
+      ibeth: { branch: "ibeth", folder: "bot_crm_ibeth" }
+    };
+
+    var chips = document.querySelectorAll(".chip");
+    var branches = document.querySelectorAll(".tree-branch");
+
+    function applyPerson(name) {
+      var data = people[name];
+      if (!data) return;
+
+      document.querySelectorAll('[data-field="branch"], [data-field="branch-inline"]').forEach(function (el) {
+        el.textContent = data.branch;
+      });
+      document.querySelectorAll('[data-field="folder"], [data-field="folder-inline"]').forEach(function (el) {
+        el.textContent = data.folder;
+      });
+
+      chips.forEach(function (chip) {
+        chip.setAttribute("aria-pressed", chip.dataset.person === name ? "true" : "false");
+      });
+      branches.forEach(function (box) {
+        box.classList.toggle("active", box.dataset.branchBox === name);
+      });
+    }
+
+    chips.forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        applyPerson(chip.dataset.person);
+      });
+    });
+
+    applyPerson("pedro");
+  })();
+</script>
