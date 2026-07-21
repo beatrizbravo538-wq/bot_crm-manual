@@ -360,6 +360,18 @@
     border-color: color-mix(in srgb, var(--danger) 35%, transparent);
   }
 
+  .fn-code {
+    margin: 6px 0 10px;
+    background: var(--term-bg);
+    color: var(--term-text);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    padding: 10px 13px;
+    border-radius: 7px;
+    overflow-x: auto;
+  }
+
   .tip, .warn {
     font-size: 13.5px;
     padding: 10px 14px;
@@ -572,6 +584,8 @@
         <div>
           <h3>Lectura del Excel (codigos_NCR.xlsx)</h3>
           <p>El bot lee 4 columnas exactas del archivo y arma una lista por cada una: el código a buscar, el nuevo código de referencia, la variable de promoción y su texto.</p>
+          <pre class="fn-code">df = pd.read_excel("codigos_NCR.xlsx", engine="openpyxl")
+cod_redenciones = df["NCR (COD REDENCION)"].dropna().astype(str).tolist()</pre>
           <span class="fn-modify locked">No cambiar los nombres de columna</span>
         </div>
       </div>
@@ -581,6 +595,9 @@
         <div>
           <h3>El bucle principal (for cod_redencion in cod_redenciones)</h3>
           <p>Repite todo el proceso de edición una vez por cada fila del Excel, en el mismo orden en que aparecen.</p>
+          <pre class="fn-code">for cod_redencion in cod_redenciones:
+    ...
+    cont += 1</pre>
           <span class="fn-modify locked">No tocar salvo que cambie el flujo de la página</span>
         </div>
       </div>
@@ -590,6 +607,8 @@
         <div>
           <h3>Valores fijos de negocio: "100" y "15"</h3>
           <p>"100" se escribe siempre en "Actualización de Variable Promo"; "15" es el límite de usos fijo en cada promoción.</p>
+          <pre class="fn-code">campo.send_keys("100")   # Actualizacion de Variable Promo
+campo.send_keys("15")    # Limite de usos</pre>
           <span class="fn-modify">Modificar si cambia la regla de negocio</span>
         </div>
       </div>
@@ -599,6 +618,11 @@
         <div>
           <h3>El interruptor Cancelar / Guardar (modo prueba)</h3>
           <p>Ahora mismo cada vuelta termina en "Cancelar" para no aplicar cambios reales. El bloque de código de arriba deja comentado exactamente qué reemplazar para pasar a "Guardar".</p>
+          <pre class="fn-code">boton_cancelar = wait.until(
+    EC.element_to_be_clickable(
+        (By.XPATH, "//button[.//span[normalize-space()='Cancelar']]")
+    )
+)</pre>
           <span class="fn-modify">Modificar cuando se pase a modo real</span>
         </div>
       </div>
@@ -608,6 +632,8 @@
         <div>
           <h3>Tiempos de espera (time, time2)</h3>
           <p>Pausas fijas (1s) y tiempo máximo de espera (20s) para que la página reaccione.</p>
+          <pre class="fn-code">time = 1     # pausa corta (segundos)
+time2 = 20   # espera maxima (segundos)</pre>
           <span class="fn-modify">Aumentar si la página va lenta y el bot falla por timeout</span>
         </div>
       </div>
@@ -617,6 +643,8 @@
         <div>
           <h3>Los XPath (rutas dentro de la página)</h3>
           <p>Son las "direcciones" que usa el bot para encontrar cada botón o campo dentro del HTML de la página del panel NCR.</p>
+          <pre class="fn-code">"//input[@placeholder='Referencia']"
+"(//i[@class='fas fa-edit']/ancestor::button)[2]"</pre>
           <span class="fn-modify locked">Solo si Cencosud cambia el diseño del sistema</span>
         </div>
       </div>
