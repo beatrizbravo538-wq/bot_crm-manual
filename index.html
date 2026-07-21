@@ -485,6 +485,64 @@
     .glossary { grid-template-columns: 1fr; row-gap: 4px; }
     .glossary dt { margin-top: 8px; }
   }
+
+  .part-divider {
+    margin-top: 64px;
+    padding-top: 28px;
+    border-top: 3px solid var(--accent);
+  }
+
+  .part-divider:first-of-type { margin-top: 0; }
+
+  .part-eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .part-title {
+    font-family: var(--serif);
+    font-size: clamp(26px, 4vw, 34px);
+    font-weight: 400;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+
+  .code-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .code-block-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .code-block-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+    border-radius: 999px;
+    padding: 2px 9px;
+  }
+
+  .code-block h3 {
+    font-size: 15.5px;
+  }
+
+  .code-block p {
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
 </style>
 
 <div class="page">
@@ -496,257 +554,17 @@
     <div class="tip" style="margin-top:18px;">Si nunca has usado Git, no pasa nada: no necesitas memorizar ni un solo comando. En cada paso te decimos exactamente qué escribirle al agente en tus propias palabras — el agente hace el resto. Los comandos en negro que ves debajo de cada paso quedan ahí solo para que, con el tiempo, entiendas qué está pasando por dentro.</div>
   </header>
 
-  <section aria-label="Selector de persona">
-    <div class="picker">
-      <p class="picker-label">¿Quién eres?</p>
-      <div class="chips" role="group" aria-label="Selecciona tu nombre">
-        <button class="chip" data-person="pedro" aria-pressed="false">Pedro</button>
-        <button class="chip" data-person="hernando" aria-pressed="false">Hernando</button>
-        <button class="chip" data-person="ibeth" aria-pressed="false">Ibeth</button>
-      </div>
-    </div>
-
-    <div class="tree">
-      <span class="tree-main">main</span>
-      <p class="muted" style="font-size:13px;margin-top:6px;">La rama estable del proyecto. Nadie trabaja aquí directamente.</p>
-      <div class="tree-branches">
-        <div class="tree-branch" data-branch-box="pedro">
-          pedro
-          <span class="who">Pedro</span>
-        </div>
-        <div class="tree-branch" data-branch-box="hernando">
-          hernando
-          <span class="who">Hernando</span>
-        </div>
-        <div class="tree-branch" data-branch-box="ibeth">
-          ibeth
-          <span class="who">Ibeth</span>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div class="part-divider">
+    <span class="part-eyebrow">Parte 1</span>
+    <h2 class="part-title">Cómo funciona el bot</h2>
+    <p class="muted">Esta es la versión comentada de <span style="font-family:var(--mono)">code_documentado.py</span>, pensada para quienes no conocen Python: bloque por bloque, en el mismo orden en que se ejecuta. La sección de login se omite en esta página pública por seguridad — está completa en el repositorio privado del proyecto.</p>
+  </div>
 
   <section>
     <div class="section-head">
-      <span class="section-num">0</span>
-      <h2>Antes de empezar</h2>
+      <span class="section-num">1.1</span>
+      <h2>Lo más importante, y qué se puede modificar</h2>
     </div>
-
-    <div class="step" style="margin-bottom:20px;">
-      <div class="step-badge">a</div>
-      <div class="step-body">
-        <h3>Instala Git</h3>
-        <p>Abre PowerShell y comprueba si ya lo tienes:</p>
-        <pre class="term"><span class="comment"># comprobar si Git ya está instalado</span>
-<span class="prompt">&gt;</span> git --version</pre>
-        <p>Si sale un error, descárgalo desde <span style="font-family:var(--mono)">git-scm.com/download/win</span> e instálalo con las opciones por defecto.</p>
-      </div>
-    </div>
-
-    <div class="step" style="margin-bottom:20px;">
-      <div class="step-badge">b</div>
-      <div class="step-body">
-        <h3>Pide tu invitación al repositorio</h3>
-        <p>El repositorio es privado. Bea debe agregarte como colaborador desde GitHub antes de que puedas descargar o subir nada. Te llegará un correo de invitación — acéptalo con tu cuenta de GitHub (créate una gratis en <span style="font-family:var(--mono)">github.com</span> si no tienes).</p>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-badge">c</div>
-      <div class="step-body">
-        <h3>Descarga tu rama a tu computadora</h3>
-        <p>Elige una carpeta (por ejemplo el Escritorio), abre PowerShell ahí, y corre:</p>
-        <pre class="term"><span class="comment"># descarga solo tu rama, en una carpeta con tu nombre</span>
-<span class="prompt">&gt;</span> git clone -b <span data-field="branch">pedro</span> https://github.com/beatrizbravo538-wq/bot_crm.git <span data-field="folder">bot_crm_pedro</span></pre>
-        <p>La primera vez que subas algo, Git te pedirá iniciar sesión con tu cuenta de GitHub (se abre el navegador). Es normal, solo autoriza y listo.</p>
-      </div>
-    </div>
-
-    <div class="step" style="margin-bottom:20px;">
-      <div class="step-badge">c.1</div>
-      <div class="step-body">
-        <h3>Activa GitHub Copilot (gratis) en VS Code</h3>
-        <p>Dentro de VS Code, abre el ícono de <strong>Extensiones</strong> (barra lateral izquierda), busca <span style="font-family:var(--mono)">GitHub Copilot Chat</span> e instálala (incluye Copilot). Al iniciar sesión con tu cuenta de GitHub, VS Code te ofrecerá activar <strong>Copilot Free</strong> — acéptalo, no pide tarjeta ni pago.</p>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-badge">d</div>
-      <div class="step-body">
-        <h3>Abre la carpeta en VS Code con el agente</h3>
-        <p>En VS Code: <span style="font-family:var(--mono)">Archivo → Abrir carpeta…</span> y selecciona tu carpeta (<span data-field="folder-inline">bot_crm_pedro</span>). Luego abre el panel de <strong>Copilot Chat</strong>, cambia el modo a <strong>Agent</strong> (menú desplegable junto al cuadro de texto) y escríbele en español lo que necesitas — no hace falta que recuerdes el comando exacto de memoria.</p>
-        <div class="tip">El agente va a pedirte confirmación antes de subir cambios a GitHub o hacer algo que afecte al repositorio compartido. Si te pregunta, revisa lo que dice y confirma solo si tiene sentido.</div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="section-num">1</span>
-      <h2>Tu rutina diaria</h2>
-    </div>
-    <p class="muted" style="margin-top:-8px;margin-bottom:24px;">Sigue estos pasos en este orden cada vez que te sientes a trabajar. Todo se ejecuta dentro de tu carpeta <span data-field="folder-inline">bot_crm_pedro</span>.</p>
-
-    <div class="steps">
-
-      <div class="step">
-        <div class="step-badge">1</div>
-        <div class="step-body">
-          <h3>Abre tu carpeta en VS Code</h3>
-          <p>No necesitas abrir una terminal a mano: con VS Code abierto en tu carpeta (<span data-field="folder-inline">bot_crm_pedro</span>), abre el panel del agente y empieza a escribirle. Él abre la terminal por ti cuando la necesita.</p>
-          <div class="agent-prompt">
-            <span class="who">Dile al agente</span>
-            <p>"Confirma en qué rama y carpeta estoy antes de que empiece a trabajar."</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-badge">2</div>
-        <div class="step-body">
-          <h3>Trae los cambios más recientes</h3>
-          <p>Antes de tocar nada, sincroniza tu copia con lo último que haya en tu rama:</p>
-          <pre class="term"><span class="prompt">&gt;</span> git pull</pre>
-          <div class="agent-prompt">
-            <span class="who">Dile al agente</span>
-            <p>"Trae los últimos cambios de mi rama antes de que empiece a trabajar."</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-badge">3</div>
-        <div class="step-body">
-          <h3>Edita el código</h3>
-          <p>Abre <span style="font-family:var(--mono)">code_test.py</span> o <span style="font-family:var(--mono)">code_documentado.py</span> y haz tus cambios. Puedes escribirlos tú mismo, o pedirle al agente que los haga por ti. Git no hace nada todavía — solo observa la carpeta.</p>
-          <div class="agent-prompt">
-            <span class="who">Dile al agente</span>
-            <p>"En code_test.py, cambia [explica qué necesitas] — explícame qué hiciste cuando termines."</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-badge">4</div>
-        <div class="step-body">
-          <h3>Revisa qué cambió</h3>
-          <p>Te muestra en rojo los archivos que modificaste, sin subir nada aún:</p>
-          <pre class="term"><span class="prompt">&gt;</span> git status</pre>
-          <div class="agent-prompt">
-            <span class="who">Dile al agente</span>
-            <p>"¿Qué archivos he modificado hasta ahora?"</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-badge">5</div>
-        <div class="step-body">
-          <h3>Marca los cambios para guardarlos</h3>
-          <p>El punto significa "todos los archivos que cambié":</p>
-          <pre class="term"><span class="prompt">&gt;</span> git add .</pre>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-badge">6</div>
-        <div class="step-body">
-          <h3>Guarda el avance con un mensaje</h3>
-          <p>El mensaje describe qué hiciste, en pocas palabras:</p>
-          <pre class="term"><span class="prompt">&gt;</span> git commit -m "Ajusto tiempos de espera en el login"</pre>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-badge">7</div>
-        <div class="step-body">
-          <h3>Sube tus cambios a GitHub</h3>
-          <pre class="term"><span class="prompt">&gt;</span> git push</pre>
-          <div class="tip">Este paso sube tus cambios a tu rama (<span data-field="branch-inline">pedro</span>) en GitHub. Nunca toca <span style="font-family:var(--mono)">main</span> ni las ramas de tus compañeros.</div>
-          <div class="agent-prompt">
-            <span class="who">Dile al agente</span>
-            <p>"Guarda mis cambios con un commit que diga '[describe lo que hiciste]' y súbelos a mi rama."</p>
-          </div>
-          <p class="muted" style="font-size:13px;margin-top:8px;">Esto reemplaza los pasos 5, 6 y 7: el agente hace <span style="font-family:var(--mono)">add</span>, <span style="font-family:var(--mono)">commit</span> y <span style="font-family:var(--mono)">push</span> por ti, pero te va a mostrar qué va a subir antes de confirmarlo.</p>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="section-num">1.5</span>
-      <h2>Otras cosas que le puedes pedir al agente</h2>
-    </div>
-    <p class="muted" style="margin-top:-8px;margin-bottom:20px;">No hace falta que sepas el comando para nada de esto — descríbelo con tus palabras, como en los ejemplos:</p>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-badge">?</div>
-        <div class="step-body">
-          <h3>Ver en qué rama estás</h3>
-          <div class="agent-prompt">
-            <span class="who">Dile al agente</span>
-            <p>"¿En qué rama estoy y hay algo sin subir?"</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-badge">?</div>
-        <div class="step-body">
-          <h3>Deshacer un cambio antes de subirlo</h3>
-          <div class="agent-prompt">
-            <span class="who">Dile al agente</span>
-            <p>"Me equivoqué en lo último que edité y todavía no lo subí. Regrésalo como estaba."</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-badge">?</div>
-        <div class="step-body">
-          <h3>Revisar si hay cambios nuevos de tus compañeros en main</h3>
-          <div class="agent-prompt">
-            <span class="who">Dile al agente</span>
-            <p>"¿Hay algo nuevo en main que debería traer a mi rama?"</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-badge">?</div>
-        <div class="step-body">
-          <h3>Entender un error que no reconoces</h3>
-          <div class="agent-prompt">
-            <span class="who">Dile al agente</span>
-            <p>"Me salió este error: [pega el mensaje]. ¿Qué significa y qué hago?"</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-badge">?</div>
-        <div class="step-body">
-          <h3>Pedir que te explique el código antes de tocarlo</h3>
-          <div class="agent-prompt">
-            <span class="who">Dile al agente</span>
-            <p>"Antes de cambiar nada, explícame qué hace esta parte del código."</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <span class="section-num">2</span>
-      <h2>El código explicado</h2>
-    </div>
-    <p class="muted" style="margin-top:-8px;">Esta es la versión comentada del bot (<span style="font-family:var(--mono)">code_documentado.py</span>), pensada para quienes no conocen Python. La sección de login se omitió en esta página pública por seguridad — está completa en el repositorio privado del proyecto.</p>
-
-    <h3 style="margin-top:26px;margin-bottom:14px;">Lo más importante, y qué se puede modificar</h3>
     <div class="fn-cards">
 
       <div class="fn-card">
@@ -805,10 +623,20 @@
 
     </div>
 
-    <h3 style="margin-top:30px;margin-bottom:6px;">Código completo (sin la sección de login)</h3>
-    <p class="code-note">Puedes desplazarte dentro del recuadro para ver todo el archivo.</p>
+  </section>
 
-    <pre class="code-embed"><code>&quot;&quot;&quot;
+  <section>
+    <div class="section-head">
+      <span class="section-num">1.2</span>
+      <h2>El código, bloque por bloque</h2>
+    </div>
+    <p class="muted" style="margin-top:-8px;">Cada bloque corresponde a una sección real del archivo. Puedes desplazarte dentro de cada recuadro si el código no entra completo.</p>
+
+    <div class="code-blocks">
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">0</span><h3>Conceptos básicos de Python</h3></div>
+        <p>Antes de entrar al código real, estas son las diez ideas de Python que vas a necesitar para leer todo lo que sigue.</p>
+        <pre class="code-embed"><code>&quot;&quot;&quot;
 ====================================================================
  BOT CRM - REDENCION NCR (version documentada para aprendizaje)
 ====================================================================
@@ -948,9 +776,12 @@ no aplicar cambios reales mientras se aprende/prueba el bot.
 # comentarios del archivo sin problema. Cuando aparezca algo nuevo
 # y no obvio (como una funcion de una libreria externa), se explica
 # en el momento, junto a esa linea.
-
-
-# ------------------------------------------------------------------
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">1</span><h3>Librerías</h3></div>
+        <p>Estas líneas traen las herramientas que usa el bot: Selenium para controlar Chrome, pandas para leer el Excel, y tkinter para las ventanas emergentes.</p>
+        <pre class="code-embed"><code># ------------------------------------------------------------------
 # 1. LIBRERIAS
 # ------------------------------------------------------------------
 
@@ -971,9 +802,12 @@ from selenium.webdriver.support import expected_conditions as EC   # Lista de &q
 from selenium.webdriver.chrome.options import Options              # Configuraciones de arranque de Chrome (ej: maximizado)
 from selenium.webdriver.chrome.service import Service              # Administra el proceso interno de chromedriver (el &quot;traductor&quot; entre este script y Chrome)
 from time import sleep                                             # La funcion sleep(n) pausa el programa n segundos
-
-
-# ------------------------------------------------------------------
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">2</span><h3>Configuración inicial del navegador</h3></div>
+        <p>Aquí se abre la ventana de Chrome que el bot va a controlar durante toda la ejecución, y se configuran los tiempos de espera.</p>
+        <pre class="code-embed"><code># ------------------------------------------------------------------
 # 2. CONFIGURACION INICIAL DEL NAVEGADOR
 # ------------------------------------------------------------------
 
@@ -1008,19 +842,16 @@ driver.set_page_load_timeout(120)    # Tiempo maximo para que cargue una pagina
 
 print(&quot;Abriendo pagina...&quot;)   # print() muestra texto en la consola/terminal, solo para que quien corre el bot vea el progreso
 driver.get(url)               # Le dice al navegador: entra a esta direccion web
-
-
-# ------------------------------------------------------------------
-# 3. LOGIN
-# ------------------------------------------------------------------
-#
-# (Seccion omitida en esta pagina publica: pide usuario y contrasena
-# por ventana emergente y los envia a los campos de login de la
-# pagina. El codigo completo esta disponible en el repositorio
-# privado del proyecto para el equipo.)
-#
-
-# ------------------------------------------------------------------
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">3</span><h3>Login (omitido en esta página)</h3></div>
+        <div class="tip">Justo después del punto anterior, se pide usuario y contraseña por una ventana emergente y se escriben en los campos de acceso de la página. Este fragmento se omite en esta página pública por seguridad — está completo en el repositorio privado del proyecto para el equipo.</div>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">4</span><h3>Ir a Promociones y elegir la campaña</h3></div>
+        <p>Tras el login, el bot entra al módulo de Promociones, pide el código de campaña por una ventana emergente, y hace clic en el resultado de la búsqueda.</p>
+        <pre class="code-embed"><code># ------------------------------------------------------------------
 # 4. IR AL MODULO DE PROMOCIONES Y ELEGIR LA CAMPANA
 # ------------------------------------------------------------------
 
@@ -1085,9 +916,12 @@ driver.execute_script(&quot;arguments[0].click();&quot;, elemento)
 print(&quot;campana seleccionada&quot;)
 
 driver.set_page_load_timeout(2)
-
-
-# ------------------------------------------------------------------
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">5</span><h3>Leer el Excel de códigos</h3></div>
+        <p>Se abre codigos_NCR.xlsx y sus 4 columnas se convierten en listas de Python, alineadas por posición entre sí.</p>
+        <pre class="code-embed"><code># ------------------------------------------------------------------
 # 5. LECTURA DEL EXCEL DE CODIGOS (codigos_NCR.xlsx)
 # ------------------------------------------------------------------
 #
@@ -1137,9 +971,12 @@ print(&quot;Codigos promovar:&quot;, cod_promovares[:5])
 print(&quot;Promovar quemado:&quot;, variable_promociones[:5])
 
 cont = 0   # Contador: indica en que fila del Excel vamos (0 = primera fila, como viste en el punto 7)
-
-
-# ------------------------------------------------------------------
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">6.0</span><h3>El bucle principal: cómo se repite todo</h3></div>
+        <p>Todo lo que sigue (bloques 6.1 a 6.10) se repite una vez por cada fila del Excel, en orden.</p>
+        <pre class="code-embed"><code># ------------------------------------------------------------------
 # 6. CICLO PRINCIPAL: una vuelta completa por cada fila del Excel
 # ------------------------------------------------------------------
 #
@@ -1157,8 +994,12 @@ for cod_redencion in cod_redenciones:
     # veces mas abajo sin tener que escribir toda la configuracion
     # de nuevo cada vez.
     wait = WebDriverWait(driver, time2)
-
-    # --- 6.1 Buscar el codigo de redencion en el panel ---
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">6.1</span><h3>Buscar el código de redención</h3></div>
+        <p>Escribe el código de esta vuelta en el buscador del panel y presiona "Buscar".</p>
+        <pre class="code-embed"><code>    # --- 6.1 Buscar el codigo de redencion en el panel ---
     campo_codigo = wait.until(
         EC.element_to_be_clickable(
             (By.XPATH, &quot;(//input[@placeholder=&#x27;Cod.&#x27;])[2]&quot;)
@@ -1175,8 +1016,12 @@ for cod_redencion in cod_redenciones:
         )
     )
     boton_buscar.click()
-
-    # --- 6.2 Entrar en modo edicion del resultado encontrado ---
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">6.2</span><h3>Entrar en modo edición</h3></div>
+        <p>Abre para edición el resultado que encontró la búsqueda.</p>
+        <pre class="code-embed"><code>    # --- 6.2 Entrar en modo edicion del resultado encontrado ---
     print(&quot;Ingresando a edicion...&quot;)
     boton_editar = wait.until(
         EC.element_to_be_clickable(
@@ -1185,8 +1030,12 @@ for cod_redencion in cod_redenciones:
     )
     boton_editar.click()
     sleep(time)
-
-    # --- 6.3 Cambiar la &quot;Referencia&quot; por el codigo Promovar ---
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">6.3</span><h3>Cambiar la Referencia por el código Promovar</h3></div>
+        <p>Reemplaza el valor de "Referencia" con el código que corresponde a esta fila del Excel (usando el contador cont como índice).</p>
+        <pre class="code-embed"><code>    # --- 6.3 Cambiar la &quot;Referencia&quot; por el codigo Promovar ---
     print(&quot;Cambiando referencia por codigo promovar...&quot;)
     wait = WebDriverWait(driver, time2)
 
@@ -1226,8 +1075,12 @@ for cod_redencion in cod_redenciones:
     driver.execute_script(&quot;arguments[0].scrollIntoView();&quot;, botonp)
     sleep(time)
     botonp.click()
-
-    # --- 6.4 Configurar Nivel de Beneficio ---
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">6.4</span><h3>Configurar Nivel de Beneficio</h3></div>
+        <p>Selecciona siempre la misma opción fija: "Total Descontable de la Transacción".</p>
+        <pre class="code-embed"><code>    # --- 6.4 Configurar Nivel de Beneficio ---
     print(&quot;configurando NIVEL DE BENEFICIO&quot;)
     wait = WebDriverWait(driver, time2)
     boton = wait.until(
@@ -1253,8 +1106,12 @@ for cod_redencion in cod_redenciones:
         )
     )
     opcion.click()   # Elige la opcion fija &quot;Total Descontable de la Transaccion&quot; (siempre la misma para todas las filas)
-
-    # --- 6.5 Configurar Tipo de Beneficio ---
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">6.5</span><h3>Configurar Tipo de Beneficio</h3></div>
+        <p>Selecciona siempre la misma opción fija: "Actualización de Variable Promo".</p>
+        <pre class="code-embed"><code>    # --- 6.5 Configurar Tipo de Beneficio ---
     print(&quot;Configurando tipo de beneficio&quot;)
     wait = WebDriverWait(driver, time2)
     input_click = wait.until(
@@ -1270,8 +1127,12 @@ for cod_redencion in cod_redenciones:
         )
     )
     opcion2.click()
-
-    # --- 6.6 Escribir &quot;100&quot; en Actualizacion de Variable Promo ---
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">6.6</span><h3>Escribir "100" en Actualización de Variable Promo</h3></div>
+        <p>Valor fijo requerido por el proceso de negocio actual.</p>
+        <pre class="code-embed"><code>    # --- 6.6 Escribir &quot;100&quot; en Actualizacion de Variable Promo ---
     print(&quot;Configurando Actualizacion de Variable Promo&quot;)
     campo = wait.until(
         EC.element_to_be_clickable(
@@ -1281,8 +1142,12 @@ for cod_redencion in cod_redenciones:
     campo.clear()
     campo.send_keys(&quot;100&quot;)   # Valor fijo requerido por el proceso de negocio (es siempre &quot;100&quot;, texto entre comillas aunque sea un numero)
     print(&quot;Actualizacion de Variable Promo&quot;)
-
-    # --- 6.7 Elegir la &quot;Variable de Promocion&quot; correcta ---
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">6.7</span><h3>Elegir la Variable de Promoción correcta</h3></div>
+        <p>El paso más delicado: arma un texto exacto (código + descripción) y busca esa opción en el desplegable del sistema.</p>
+        <pre class="code-embed"><code>    # --- 6.7 Elegir la &quot;Variable de Promocion&quot; correcta ---
     #
     # Este es el paso mas delicado: se escribe el codigo (variable_promocion)
     # y el sistema muestra un desplegable con opciones tipo
@@ -1340,8 +1205,12 @@ for cod_redencion in cod_redenciones:
     sleep(time)
     boton.click()
     print(&quot;aceptar&quot;)
-
-    # --- 6.8 Detalles adicionales: texto promocional y limites ---
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">6.8</span><h3>Detalles adicionales: texto promocional y límites</h3></div>
+        <p>Marca "Promoción dirigida", copia el texto del ticket, y fija el límite de usos en 15.</p>
+        <pre class="code-embed"><code>    # --- 6.8 Detalles adicionales: texto promocional y limites ---
     print(&quot;Configurando detalles adicionales...&quot;)
     wait = WebDriverWait(driver, time2)
 
@@ -1399,8 +1268,12 @@ for cod_redencion in cod_redenciones:
     campo.click()
     campo.clear()
     campo.send_keys(&quot;15&quot;)
-
-    # --- 6.9 Subir el archivo con la base de clientes (segmento) ---
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">6.9</span><h3>Subir el archivo con la base de clientes</h3></div>
+        <p>Fuerza a que el campo de archivo (oculto por diseño) sea visible, y le escribe la ruta del archivo indicada al inicio.</p>
+        <pre class="code-embed"><code>    # --- 6.9 Subir el archivo con la base de clientes (segmento) ---
     wait = WebDriverWait(driver, time2)
     print(&quot;Importando Segmento...&quot;)
     input_file = wait.until(
@@ -1434,8 +1307,12 @@ for cod_redencion in cod_redenciones:
 
     print(&quot;Guardando cambios...&quot;)
     sleep(time)
-
-    # --- 6.10 MODO PRUEBA: presiona &quot;Cancelar&quot; en vez de &quot;Guardar&quot; ---
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">6.10</span><h3>Modo prueba: Cancelar en vez de Guardar</h3></div>
+        <p>Actualmente el bot presiona "Cancelar" para no aplicar cambios reales. El propio código explica qué reemplazar para pasar a modo real.</p>
+        <pre class="code-embed"><code>    # --- 6.10 MODO PRUEBA: presiona &quot;Cancelar&quot; en vez de &quot;Guardar&quot; ---
     #
     # Para pasar a modo real (guardar de verdad), hay que reemplazar
     # este bloque por el boton &quot;Guardar&quot; (ver comentario mas abajo).
@@ -1489,9 +1366,12 @@ for cod_redencion in cod_redenciones:
 #    repite una vez por cada codigo de redencion. Lo que sigue abajo
 #    ya NO esta indentado dentro del for, asi que corre UNA SOLA VEZ,
 #    despues de que termina de repetirse todo el bucle.
-
-
-# ------------------------------------------------------------------
+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-head"><span class="code-block-num">7</span><h3>Resumen final y cierre</h3></div>
+        <p>Muestra cuántos procesos se ejecutaron y cierra el navegador.</p>
+        <pre class="code-embed"><code># ------------------------------------------------------------------
 # 7. RESUMEN FINAL Y CIERRE
 # ------------------------------------------------------------------
 
@@ -1509,12 +1389,262 @@ html = driver.page_source   # Guarda el HTML final de la pagina (no se usa mas a
 
 driver.quit()   # Cierra el navegador y termina la conexion con Selenium
 </code></pre>
+      </div>
+    </div>
+  </section>
 
+  <div class="part-divider">
+    <span class="part-eyebrow">Parte 2</span>
+    <h2 class="part-title">Trabajar con GitHub</h2>
+    <p class="muted">GitHub es donde vive el código del proyecto en la nube, con historial completo de cambios, para que varias personas puedan colaborar sin pisarse el trabajo. Cada quien edita en su propia "rama" y sube sus cambios cuando está listo — nada se pierde y nada se sobrescribe por accidente.</p>
+  </div>
+
+  <section aria-label="Selector de persona">
+    <div class="picker">
+      <p class="picker-label">¿Quién eres?</p>
+      <div class="chips" role="group" aria-label="Selecciona tu nombre">
+        <button class="chip" data-person="pedro" aria-pressed="false">Pedro</button>
+        <button class="chip" data-person="hernando" aria-pressed="false">Hernando</button>
+        <button class="chip" data-person="ibeth" aria-pressed="false">Ibeth</button>
+      </div>
+    </div>
+
+    <div class="tree">
+      <span class="tree-main">main</span>
+      <p class="muted" style="font-size:13px;margin-top:6px;">La rama estable del proyecto. Nadie trabaja aquí directamente.</p>
+      <div class="tree-branches">
+        <div class="tree-branch" data-branch-box="pedro">
+          pedro
+          <span class="who">Pedro</span>
+        </div>
+        <div class="tree-branch" data-branch-box="hernando">
+          hernando
+          <span class="who">Hernando</span>
+        </div>
+        <div class="tree-branch" data-branch-box="ibeth">
+          ibeth
+          <span class="who">Ibeth</span>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section>
     <div class="section-head">
-      <span class="section-num">3</span>
+      <span class="section-num">2.1</span>
+      <h2>Antes de empezar</h2>
+    </div>
+
+    <div class="step" style="margin-bottom:20px;">
+      <div class="step-badge">a</div>
+      <div class="step-body">
+        <h3>Instala Git</h3>
+        <p>Abre PowerShell y comprueba si ya lo tienes:</p>
+        <pre class="term"><span class="comment"># comprobar si Git ya está instalado</span>
+<span class="prompt">&gt;</span> git --version</pre>
+        <p>Si sale un error, descárgalo desde <span style="font-family:var(--mono)">git-scm.com/download/win</span> e instálalo con las opciones por defecto.</p>
+      </div>
+    </div>
+
+    <div class="step" style="margin-bottom:20px;">
+      <div class="step-badge">b</div>
+      <div class="step-body">
+        <h3>Pide tu invitación al repositorio</h3>
+        <p>El repositorio es privado. Bea debe agregarte como colaborador desde GitHub antes de que puedas descargar o subir nada. Te llegará un correo de invitación — acéptalo con tu cuenta de GitHub (créate una gratis en <span style="font-family:var(--mono)">github.com</span> si no tienes).</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-badge">c</div>
+      <div class="step-body">
+        <h3>Descarga tu rama a tu computadora</h3>
+        <p>Elige una carpeta (por ejemplo el Escritorio), abre PowerShell ahí, y corre:</p>
+        <pre class="term"><span class="comment"># descarga solo tu rama, en una carpeta con tu nombre</span>
+<span class="prompt">&gt;</span> git clone -b <span data-field="branch">pedro</span> https://github.com/beatrizbravo538-wq/bot_crm.git <span data-field="folder">bot_crm_pedro</span></pre>
+        <p>La primera vez que subas algo, Git te pedirá iniciar sesión con tu cuenta de GitHub (se abre el navegador). Es normal, solo autoriza y listo.</p>
+      </div>
+    </div>
+
+    <div class="step" style="margin-bottom:20px;">
+      <div class="step-badge">c.1</div>
+      <div class="step-body">
+        <h3>Activa GitHub Copilot (gratis) en VS Code</h3>
+        <p>Dentro de VS Code, abre el ícono de <strong>Extensiones</strong> (barra lateral izquierda), busca <span style="font-family:var(--mono)">GitHub Copilot Chat</span> e instálala (incluye Copilot). Al iniciar sesión con tu cuenta de GitHub, VS Code te ofrecerá activar <strong>Copilot Free</strong> — acéptalo, no pide tarjeta ni pago.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-badge">d</div>
+      <div class="step-body">
+        <h3>Abre la carpeta en VS Code con el agente</h3>
+        <p>En VS Code: <span style="font-family:var(--mono)">Archivo → Abrir carpeta…</span> y selecciona tu carpeta (<span data-field="folder-inline">bot_crm_pedro</span>). Luego abre el panel de <strong>Copilot Chat</strong>, cambia el modo a <strong>Agent</strong> (menú desplegable junto al cuadro de texto) y escríbele en español lo que necesitas — no hace falta que recuerdes el comando exacto de memoria.</p>
+        <div class="tip">El agente va a pedirte confirmación antes de subir cambios a GitHub o hacer algo que afecte al repositorio compartido. Si te pregunta, revisa lo que dice y confirma solo si tiene sentido.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">2.2</span>
+      <h2>Tu rutina diaria</h2>
+    </div>
+    <p class="muted" style="margin-top:-8px;margin-bottom:24px;">Sigue estos pasos en este orden cada vez que te sientes a trabajar. Todo se ejecuta dentro de tu carpeta <span data-field="folder-inline">bot_crm_pedro</span>.</p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-badge">1</div>
+        <div class="step-body">
+          <h3>Abre tu carpeta en VS Code</h3>
+          <p>No necesitas abrir una terminal a mano: con VS Code abierto en tu carpeta (<span data-field="folder-inline">bot_crm_pedro</span>), abre el panel del agente y empieza a escribirle. Él abre la terminal por ti cuando la necesita.</p>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"Confirma en qué rama y carpeta estoy antes de que empiece a trabajar."</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">2</div>
+        <div class="step-body">
+          <h3>Trae los cambios más recientes</h3>
+          <p>Antes de tocar nada, sincroniza tu copia con lo último que haya en tu rama:</p>
+          <pre class="term"><span class="prompt">&gt;</span> git pull</pre>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"Trae los últimos cambios de mi rama antes de que empiece a trabajar."</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">3</div>
+        <div class="step-body">
+          <h3>Edita el código</h3>
+          <p>Abre <span style="font-family:var(--mono)">code_test.py</span> o <span style="font-family:var(--mono)">code_documentado.py</span> y haz tus cambios. Puedes escribirlos tú mismo, o pedirle al agente que los haga por ti. Git no hace nada todavía — solo observa la carpeta.</p>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"En code_test.py, cambia [explica qué necesitas] — explícame qué hiciste cuando termines."</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">4</div>
+        <div class="step-body">
+          <h3>Revisa qué cambió</h3>
+          <p>Te muestra en rojo los archivos que modificaste, sin subir nada aún:</p>
+          <pre class="term"><span class="prompt">&gt;</span> git status</pre>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"¿Qué archivos he modificado hasta ahora?"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">5</div>
+        <div class="step-body">
+          <h3>Marca los cambios para guardarlos</h3>
+          <p>El punto significa "todos los archivos que cambié":</p>
+          <pre class="term"><span class="prompt">&gt;</span> git add .</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">6</div>
+        <div class="step-body">
+          <h3>Guarda el avance con un mensaje</h3>
+          <p>El mensaje describe qué hiciste, en pocas palabras:</p>
+          <pre class="term"><span class="prompt">&gt;</span> git commit -m "Ajusto tiempos de espera en el login"</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">7</div>
+        <div class="step-body">
+          <h3>Sube tus cambios a GitHub</h3>
+          <pre class="term"><span class="prompt">&gt;</span> git push</pre>
+          <div class="tip">Este paso sube tus cambios a tu rama (<span data-field="branch-inline">pedro</span>) en GitHub. Nunca toca <span style="font-family:var(--mono)">main</span> ni las ramas de tus compañeros.</div>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"Guarda mis cambios con un commit que diga '[describe lo que hiciste]' y súbelos a mi rama."</p>
+          </div>
+          <p class="muted" style="font-size:13px;margin-top:8px;">Esto reemplaza los pasos 5, 6 y 7: el agente hace <span style="font-family:var(--mono)">add</span>, <span style="font-family:var(--mono)">commit</span> y <span style="font-family:var(--mono)">push</span> por ti, pero te va a mostrar qué va a subir antes de confirmarlo.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">2.3</span>
+      <h2>Otras cosas que le puedes pedir al agente</h2>
+    </div>
+    <p class="muted" style="margin-top:-8px;margin-bottom:20px;">No hace falta que sepas el comando para nada de esto — descríbelo con tus palabras, como en los ejemplos:</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-badge">?</div>
+        <div class="step-body">
+          <h3>Ver en qué rama estás</h3>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"¿En qué rama estoy y hay algo sin subir?"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">?</div>
+        <div class="step-body">
+          <h3>Deshacer un cambio antes de subirlo</h3>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"Me equivoqué en lo último que edité y todavía no lo subí. Regrésalo como estaba."</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">?</div>
+        <div class="step-body">
+          <h3>Revisar si hay cambios nuevos de tus compañeros en main</h3>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"¿Hay algo nuevo en main que debería traer a mi rama?"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">?</div>
+        <div class="step-body">
+          <h3>Entender un error que no reconoces</h3>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"Me salió este error: [pega el mensaje]. ¿Qué significa y qué hago?"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-badge">?</div>
+        <div class="step-body">
+          <h3>Pedir que te explique el código antes de tocarlo</h3>
+          <div class="agent-prompt">
+            <span class="who">Dile al agente</span>
+            <p>"Antes de cambiar nada, explícame qué hace esta parte del código."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">2.4</span>
       <h2>Glosario rápido</h2>
     </div>
     <dl class="glossary">
@@ -1539,7 +1669,7 @@ driver.quit()   # Cierra el navegador y termina la conexion con Selenium
 
   <section>
     <div class="section-head">
-      <span class="section-num">4</span>
+      <span class="section-num">2.5</span>
       <h2>Si algo sale mal</h2>
     </div>
 
